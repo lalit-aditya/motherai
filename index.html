@@ -70,16 +70,28 @@
             });
 
             recognition.onresult = async (event) => {
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
-                }
-                
-                // Update ongoing transcript
-                ongoingTranscript = transcript;
-                updateConversation('user', ongoingTranscript);
+                let interimTranscript = '';
+                let finalTranscript = '';
 
-                if (event.results[0].isFinal) {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Update conversation with interim results (optional)
+                // You might want to disable this if it causes too much noise
+                // if (interimTranscript) {
+                //     updateConversation('user', interimTranscript);
+                // }
+
+                // Update conversation with final result
+                if (finalTranscript) {
+                    updateConversation('user', finalTranscript);
+                    ongoingTranscript = finalTranscript; // Set ongoing transcript to final result
+
                     try {
                         const result = await model.generateContent(ongoingTranscript);
                         const response = await result.response;
