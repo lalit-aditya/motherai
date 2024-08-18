@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mother AI</title>
+</head>
+
+<body>
+  <h1>Mother AI</h1>
+  <button id="startBtn">Start Recognition</button>
+  <button id="stopBtn">Stop Recognition</button>
+  <p><strong>You said:</strong> <span id="spokenText"></span></p>
+  <p><strong>AI response:</strong> <span id="aiResponse"></span></p>
+
+  <!-- Import the Google Generative AI library -->
+  <script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+    </script>
+
+  <script type="module">
+    import {GoogleGenerativeAI} from "@google/generative-ai";
+
+    const API_KEY = "AIzaSyDxiYL_b2ujeSjeY3uJEY46Eq18_vkOK7w";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"});
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-GB';
+      recognition.continuous = true; // Keep recognition active
+      recognition.interimResults = true; // Provide partial results
+
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const spokenText = document.getElementById('spokenText');
+      const aiResponse = document.getElementById('aiResponse');
+
+      // Start recognition
+      startBtn.addEventListener('click', () => {
+        recognition.start();
+        console.log('Recognition started');
+      });
+
+      // Stop recognition manually
+      stopBtn.addEventListener('click', () => {
+        recognition.stop();
+        console.log('Recognition stopped manually');
+      });
+
+      recognition.onresult = async (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        spokenText.innerText = transcript;
+        console.log(`You said: ${transcript}`);
+
+        // Optionally, generate AI response when final result is available
+        if (event.results[0].isFinal) {
+          try {
+            const result = await model.generateContent(transcript);
+            const response = await result.response;
+            const aiText = await response.text();
+            aiResponse.innerText = aiText;
+            console.log("AI response:", aiText);
+
+            speakText(aiText);
+          } catch (error) {
+            console.error("Error generating AI response:", error);
+            aiResponse.innerText = "Sorry, there was an error generating the AI response.";
+          }
+        }
+      };
+
+      recognition.onend = () => {
+        console.log('Recognition ended');
+        // Optionally restart recognition if needed
+        // recognition.start();
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Recognition error:', event.error);
+      };
+    } else {
+      alert('Speech recognition not supported in this browser.');
+    }
+
+    function speakText(text) {
+      const synth = window.speechSynthesis;
+
+      // Ensure voices are loaded
+      let voices = [];
+      const voicesLoadPromise = new Promise((resolve) => {
+        speechSynthesis.onvoiceschanged = () => {
+          voices = speechSynthesis.getVoices();
+          resolve();
+        };
+      });
+
+      voicesLoadPromise.then(() => {
+        const indianVoice = voices.find(voice => voice.lang === 'en-IN' && voice.name.includes('Female'));
+
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.voice = indianVoice || null;
+        msg.lang = 'en-IN';
+        msg.pitch = 0.8;  // Slightly lower pitch for a deeper sound
+        msg.rate = 0.9;   // Slower rate
+        msg.volume = 1.0; // Full volume
+        synth.speak(msg);
+      });
+    }
+  </script>
+</body>
+
+</html>
