@@ -48,61 +48,60 @@
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-GB';
-            recognition.continuous = true; // Keep recognition active
-            recognition.interimResults = true; // Provide partial results
+            recognition.continuous = true;
+            recognition.interimResults = true;
 
             const startBtn = document.getElementById('startBtn');
             const stopBtn = document.getElementById('stopBtn');
             const conversation = document.getElementById('conversation');
 
-            let ongoingTranscript = '';
+            let finalTranscript = '';
+            let typingTimer;
+            const typingDelay = 3000; // 3 seconds delay to consider it as final input
 
-            // Start recognition
             startBtn.addEventListener('click', () => {
                 recognition.start();
                 console.log('Recognition started');
             });
 
-            // Stop recognition manually
             stopBtn.addEventListener('click', () => {
                 recognition.stop();
                 console.log('Recognition stopped manually');
             });
 
-            recognition.onresult = async (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
+            recognition.onresult = (event) => {
+                finalTranscript = ''; // Reset finalTranscript when new results come in
+                clearTimeout(typingTimer); // Clear any previous timer
 
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     if (event.results[i].isFinal) {
                         finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
                     }
                 }
 
                 // Update conversation with interim results (optional)
                 // You might want to disable this if it causes too much noise
-                // if (interimTranscript) {
-                //     updateConversation('user', interimTranscript);
+                // if (finalTranscript) {
+                //     updateConversation('user', finalTranscript);
                 // }
 
-                // Update conversation with final result
-                if (finalTranscript) {
-                    updateConversation('user', finalTranscript);
-                    ongoingTranscript = finalTranscript; // Set ongoing transcript to final result
-
-                    try {
-                        const result = await model.generateContent(ongoingTranscript);
-                        const response = await result.response;
-                        const aiText = await response.text();
-                        updateConversation('ai', aiText);
-                        speakText(aiText);
-                    } catch (error) {
-                        console.error("Error generating AI response:", error);
-                        updateConversation('ai', "Sorry, there was an error generating the AI response.");
+                // Set a timer to process the final transcript after a pause
+                typingTimer = setTimeout(async () => {
+                    if (finalTranscript) {
+                        updateConversation('user', finalTranscript);
+                        try {
+                            const result = await model.generateContent(finalTranscript);
+                            const response = await result.response;
+                            const aiText = await response.text();
+                            updateConversation('ai', aiText);
+                            speakText(aiText);
+                        } catch (error) {
+                            console.error("Error generating AI response:", error);
+                            updateConversation('ai', "Sorry, there was an error generating the AI response.");
+                        }
+                        finalTranscript = ''; // Clear after processing
                     }
-                }
+                }, typingDelay);
             };
 
             recognition.onend = () => {
