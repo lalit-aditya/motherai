@@ -1,0 +1,83 @@
+/* style.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-top: 20px;
+  font-size: 2em;
+}
+
+button,
+#submitTextBtn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+button:hover,
+#submitTextBtn:hover {
+  background-color: #2980b9;
+}
+
+#textInput {
+  padding: 10px;
+  width: 80%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+#conversation {
+  margin: 20px auto;
+  width: 80%;
+  max-width: 600px;
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #fff;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.message.user {
+  background-color: #d9eaf7;
+  color: #2c3e50;
+}
+
+.message.ai {
+  background-color: #e8f6e8;
+  color: #2c3e50;
+}
+
+label {
+  font-weight: bold;
+  margin: 0 10px;
+  color: #2c3e50;
+}
+
+input[type="radio"] {
+  margin: 0 5px;
+}
