@@ -1,7 +1,5 @@
-/* style.css */
-
 body {
-  font-family: Arial, sans-serif;
+  font-family: Helvetica;
   background-color: #f5f7fa;
   color: #333;
   text-align: center;
@@ -17,8 +15,8 @@ h1 {
 
 button,
 #submitTextBtn {
-  background-color: #3498db;
-  color: white;
+  background-color: #ffff;
+  color: #A30A42;
   border: none;
   padding: 10px 20px;
   margin: 10px 5px;
@@ -30,7 +28,7 @@ button,
 
 button:hover,
 #submitTextBtn:hover {
-  background-color: #2980b9;
+  background-color: #ffff;
 }
 
 #textInput {
@@ -43,10 +41,11 @@ button:hover,
   margin-top: 10px;
 }
 
+
 #conversation {
   margin: 20px auto;
   width: 80%;
-  max-width: 600px;
+  max-width: 800px;
   height: 400px;
   overflow-y: auto;
   border: 1px solid #ddd;
@@ -62,6 +61,37 @@ button:hover,
   text-align: left;
 }
 
+#nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+body {
+  background-color: #A30A42;
+}
+
+#logo {
+  width: 60px;
+  height: 60px;
+}
+
+@font-face {
+  font-family: Helvetica;
+  src: local("helvetica.ttf");
+}
+
+.name {
+  font-family: Helvetica;
+  color: #ffff;
+  font-size: 25px;
+}
+
 .message.user {
   background-color: #d9eaf7;
   color: #2c3e50;
@@ -70,6 +100,10 @@ button:hover,
 .message.ai {
   background-color: #e8f6e8;
   color: #2c3e50;
+}
+
+#radio {
+  display: none;
 }
 
 label {
